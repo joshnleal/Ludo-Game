@@ -15,13 +15,13 @@ APP = 'active_pawn_positions'
     
 def main():
     print('*** Mensch ärgere Dich nicht ***')
-    temp_colors = COLORS[:]
+    available_colors = COLORS[:]
     if fs.check_existing_game():
        players = fs.load_existing_game()
        print("Last session restored.")
     else:
         num_of_players = read_players()
-        players = create_players(num_of_players, temp_colors)
+        players = create_players(num_of_players, available_colors)
     # old_pos = 50
     color_initials = get_initials(players)
     while True:
@@ -44,43 +44,33 @@ def read_players():
     """Ask the user how many players want to participate. Returns the number of players."""
     while True:
         try:
-            num_of_players = input("With how many players would you like to play [2-4]: ")
-            if not num_of_players.isdigit:
-                print("Input not a digit. Try again.")
-                continue  
-            elif int(num_of_players) > MAX_PLAYERS or int(num_of_players) < MIN_PLAYERS:
-                print("Input is invalid. Try again.")
-                continue
-            else:
-                num_of_players = int(num_of_players)
+            num_of_players = int(input("With how many players would you like to play [2-4]: "))
+            if  MIN_PLAYERS <= num_of_players <= MAX_PLAYERS:
                 return num_of_players
-        except:
-            print("Input invalid. Try again.")
+            print(f"Input invalid. Enter a number betwee {MIN_PLAYERS} and {MAX_PLAYERS}.")
+        except ValueError:
+            print("Input invalid. Input a digit.")
 
 
-def create_players(num_of_players, temp_colors):
-    """Has the player choose their color and stores the color and other info into a dictionary. Returns the players' info as a list of dictionaries."""
+def create_players(num_of_players, available_colors):
+    """The player chooses their color and stores the color and other info into a dictionary. Returns the players' info as a list of dictionaries."""
     player_info = []
     for i in range(num_of_players):
         while True:
-            player_color = input(f"Choose a color for player #{i + 1} {temp_colors}: ").lower()
-            if player_color not in temp_colors:
-                print("Invalid color!")
-                continue
-            else:
-                for color in temp_colors:
-                    if player_color.lower() == color: 
-                        generic_start = {
-                                        "color": player_color,
-                                        "starting_square": i * 10,
-                                        'active_pawn_positions': [], 
-                                        "pawns_available": PAWNS_PER_PLAYER, 
-                                        "pawns_home": 0, 
-                                        }
-                        temp_colors.remove(color)
-                        player_info.append(generic_start)
-                        break
+            player_color = input(f"Choose a color for player #{i + 1} {available_colors}: ").lower()
+            if player_color in available_colors:
+                generic_start = {
+                                "color": player_color,
+                                "starting_square": i * 10,
+                                'active_pawn_positions': [], 
+                                "pawns_available": PAWNS_PER_PLAYER, 
+                                "pawns_home": 0, 
+                                }
+                player_info.append(generic_start)
+                available_colors.remove(player_color)
                 break
+            else:
+                print("Invalid color! Please select one of the available colors.")
     return player_info
 
 
