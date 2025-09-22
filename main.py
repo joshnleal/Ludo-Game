@@ -224,12 +224,8 @@ def get_initials(players):
     """Get the initials of each player's color"""
     player_initials = []
     for player in players:
-        for index, letter in enumerate(player['color']):
-            if index == 0:
-                player_initials.append(letter)
-            else:
-                continue
+        player_initials.append(player['color'][0])
     return player_initials
     
-    
-main()
+if __name__ == "__main__":   
+    main()
