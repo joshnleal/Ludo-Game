@@ -22,7 +22,6 @@ def main():
     else:
         num_of_players = read_players()
         players = create_players(num_of_players, available_colors)
-    # old_pos = 50
     color_initials = get_initials(players)
     while True:
         for player in players:
@@ -36,8 +35,6 @@ def main():
                 bp.print_board(players, color_initials, BOARD_SIZE)
                 os.remove("save_file.txt") 
                 exit()
-            else:
-                continue 
 
 
 def read_players():
@@ -111,28 +108,21 @@ def give_start(player, players, dice):
 
 def check_num_pawns(player):
     """Moves player's pawn automatically if the player only has one on the board, checks to see if the player has any moveable pawns, and gives the player the option to pick which pawn they want to move (if applicable). Returns the value of selection."""
-    if len(player[APP]) > 1:
-        while True:
-            try:
-                selection = input(f"The pawn at which square would you like to move? ({', '.join(str(e) for e in player[APP])}): ")
-                if not selection.isdigit():
-                    print("Try again.")
-                elif int(selection) not in player[APP]:
-                    print("Try again.")
-                    continue
-                else:
-                    selection = int(selection)
-                    return selection
-            except:
-                print("Invalid input. Please try again.")
-    elif len(player[APP]) == 0:
+    if len(player[APP]) == 0:
         print("No moveable pawns.")
-        selection = None
-        return selection
-    else:
-        selection = player[APP][0]
-        return selection
-        
+        return None
+    elif len(player[APP]) == 1:
+        return player[APP][0]
+    
+    while True:
+        try:
+            selection = int(input(f"The pawn at which square would you like to move? ({', '.join(str(e) for e in player[APP])}): "))
+            if selection in player[APP]:
+                return selection
+            print("Try again.")
+        except ValueError:
+            print("Invalid input. Please select your available pawn positions.")
+
 
 def move_pawn(player, players, dice, selection):
     if selection is None:
