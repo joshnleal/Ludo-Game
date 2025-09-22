@@ -32,6 +32,7 @@ def main():
                 move_pawn(player, players, dice, selection)
             fs.create_save_file(players)
             if check_win(player):
+                print(f"Player {player['color']} has won the game!")
                 bp.print_board(players, color_initials, BOARD_SIZE)
                 os.remove("save_file.txt") 
                 exit()
@@ -44,7 +45,7 @@ def read_players():
             num_of_players = int(input("With how many players would you like to play [2-4]: "))
             if  MIN_PLAYERS <= num_of_players <= MAX_PLAYERS:
                 return num_of_players
-            print(f"Input invalid. Enter a number betwee {MIN_PLAYERS} and {MAX_PLAYERS}.")
+            print(f"Input invalid. Enter a number between {MIN_PLAYERS} and {MAX_PLAYERS}.")
         except ValueError:
             print("Input invalid. Input a digit.")
 
@@ -83,7 +84,7 @@ def roll_dice(player):
 
 
 def give_start(player, players, dice):
-    """Places player's pawn in start position. Returns boolean values."""
+    """Places player's pawn in start position and decides if player has pawns to move. Returns boolean values."""
     if dice < 6:
         return False
     elif dice == 6 and player['pawns_available'] == 0:
@@ -106,6 +107,7 @@ def give_start(player, players, dice):
                 return True
 
 
+
 def check_num_pawns(player):
     """Moves player's pawn automatically if the player only has one on the board, checks to see if the player has any moveable pawns, and gives the player the option to pick which pawn they want to move (if applicable). Returns the value of selection."""
     if len(player[APP]) == 0:
@@ -126,20 +128,17 @@ def check_num_pawns(player):
 
 def move_pawn(player, players, dice, selection):
     if selection is None:
-        pass
-    else:
-        index = player.get(APP).index(selection)
-        old_pos = player[APP][index]
-        new_pos = old_pos + dice
-        new_pos = new_pos % BOARD_SIZE
-        # check_if_passed(new_pos) implement this "someday"
-        check_collision(players, new_pos)
-        player[APP][index] = new_pos 
-        if check_home_pos(player, players, dice, new_pos) == True:
-            return 
-        else:
-            print_movement(old_pos, new_pos)     
-            return 
+        return
+    
+    index = player.get(APP).index(selection)
+    old_pos = player[APP][index]
+    new_pos = (old_pos + dice) % BOARD_SIZE
+
+    check_collision(players, new_pos)
+    player[APP][index] = new_pos 
+
+    print_movement(old_pos, new_pos)     
+    check_home_pos(player, new_pos)
 
 
 def print_movement(old_pos, new_pos):
@@ -152,32 +151,21 @@ def check_collision(players, new_pos):
         positions = player[APP]
         if new_pos in positions:
             index = positions.index(new_pos)   
-            if player[APP][index] == (player[START_SQUARE]):
-                player[APP].pop()
-                player['pawns_available'] += 1     
-            else:
-                player[APP].pop(index)
-                player['pawns_available'] += 1     
+            player[APP].pop(index)
+            player['pawns_available'] += 1     
             return True
     return False
 
 
-def check_home_pos(player, players, dice, new_pos):  
+def check_home_pos(player, new_pos):  
     if new_pos == player[START_SQUARE]:
         player['pawns_home'] += 1
         player[APP].remove(new_pos)
         print("Pawn has arrived home!")
-        return True
-    else: 
-        pass
 
 
 def check_win(player):
-    if player['pawns_home'] == 4:
-        print(f"Player {player['color']} has won the game!")
-        return True
-    else:
-        return False
+    return player['pawns_home'] == 4
 
 
 def get_initials(players):
