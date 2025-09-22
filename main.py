@@ -1,15 +1,20 @@
-import random, os, file_saver as fs, board_printer as bp
-PAWN_COUNT = 4
+import random
+import os
+import file_saver as fs
+import board_printer as bp
+
+
+PAWNS_PER_PLAYER = 4
 MIN_PLAYERS = 2
 MAX_PLAYERS = 4
 COLORS = ["red", "green", "yellow", "black"]
 BOARD_SIZE = 40
-STRT_SQR = 'starting_square'
+START_SQUARE = 'starting_square'
 APP = 'active_pawn_positions'
 
     
 def main():
-    print('*** Mens Erger Je Niet ***')
+    print('*** Mensch ärgere Dich nicht ***')
     temp_colors = COLORS[:]
     if fs.check_existing_game():
        players = fs.load_existing_game()
@@ -69,7 +74,7 @@ def create_players(num_of_players, temp_colors):
                                         "color": player_color,
                                         "starting_square": i * 10,
                                         'active_pawn_positions': [], 
-                                        "pawns_available": PAWN_COUNT, 
+                                        "pawns_available": PAWNS_PER_PLAYER, 
                                         "pawns_home": 0, 
                                         }
                         temp_colors.remove(color)
@@ -82,7 +87,7 @@ def create_players(num_of_players, temp_colors):
 # def display_player(players):
 #     print("\nPlayers:")
 #     for player_num, player in enumerate(players):
-#         print(f"{player_num}. {player['color']} (starting square: {player[STRT_SQR]}, pawns available: {player['pawns_available']}, pawns home: {player['pawns_home']})")
+#         print(f"{player_num}. {player['color']} (starting square: {player[START_SQUARE]}, pawns available: {player['pawns_available']}, pawns home: {player['pawns_home']})")
 #     return
 
 
@@ -118,13 +123,13 @@ def give_start(player, players, dice):
         return False
     elif dice == 6 and player['pawns_available'] == 0:
         return False
-    elif dice == 6 and player[STRT_SQR] in player[APP]:
+    elif dice == 6 and player[START_SQUARE] in player[APP]:
         return True
     else:
         if player['pawns_available'] == 0:
             return False
         else:
-            new_pos = player[STRT_SQR]
+            new_pos = player[START_SQUARE]
             if not check_collision(players, new_pos):
                 player[APP].append(new_pos)
                 player['pawns_available'] -= 1
@@ -168,7 +173,7 @@ def move_pawn(player, players, dice, selection):
         index = player.get(APP).index(selection)
         old_pos = player[APP][index]
         new_pos = old_pos + dice
-        new_pos = new_pos % 40
+        new_pos = new_pos % BOARD_SIZE
         # check_if_passed(new_pos) implement this "someday"
         check_collision(players, new_pos)
         player[APP][index] = new_pos 
@@ -189,7 +194,7 @@ def check_collision(players, new_pos):
         positions = player[APP]
         if new_pos in positions:
             index = positions.index(new_pos)   
-            if player[APP][index] == (player[STRT_SQR]):
+            if player[APP][index] == (player[START_SQUARE]):
                 player[APP].pop()
                 player['pawns_available'] += 1     
             else:
@@ -200,7 +205,7 @@ def check_collision(players, new_pos):
 
 
 def check_home_pos(player, players, dice, new_pos):  
-    if new_pos == player[STRT_SQR]:
+    if new_pos == player[START_SQUARE]:
         player['pawns_home'] += 1
         player[APP].remove(new_pos)
         print("Pawn has arrived home!")
@@ -210,7 +215,7 @@ def check_home_pos(player, players, dice, new_pos):
 
 
 # def check_if_passed(home):
-    # if home > player[STRT_SQR] and player[STRT_SQR] % home < 0:
+    # if home > player[START_SQUARE] and player[START_SQUARE] % home < 0:
     #     print("Pawn would go past home.")
     #     return 
     # else:
