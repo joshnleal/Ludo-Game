@@ -69,27 +69,8 @@ def create_players(num_of_players, available_colors):
                 player_info.append(generic_start)
                 available_colors.remove(player_color)
                 break
-            else:
-                print("Invalid color! Please select one of the available colors.")
+            print("Invalid color! Please select one of the available colors.")
     return player_info
-
-
-# def display_player(players):
-#     print("\nPlayers:")
-#     for player_num, player in enumerate(players):
-#         print(f"{player_num}. {player['color']} (starting square: {player[START_SQUARE]}, pawns available: {player['pawns_available']}, pawns home: {player['pawns_home']})")
-#     return
-
-
-# def display_gameboard(players, board):
-#    """Displays a boring 'board' that shows the board position and the corresponding color to it."""
-#     print("\nBoard:")
-#     for position in board['square']:
-#         for player in players:
-#             if position in player[APP]:
-#                 print(f"{position}: {player['color']}")
-#                 continue
-#     return 
 
 
 def roll_dice(player):
@@ -97,14 +78,11 @@ def roll_dice(player):
     print(f"\nPlayer {player['color']}")
     while True:
         key = input("Press enter to roll the dice...")
-        dice = random.randint(1, 6)
         if key == "":
+            dice = random.randint(1, 6)
             print(f"You rolled: {dice}!")
             return dice
-        else:
-            # dice = int(key) - Test code
-            print("Try again.")
-            continue
+        print("Just press Enter.")
 
 
 def give_start(player, players, dice):
@@ -204,14 +182,6 @@ def check_home_pos(player, players, dice, new_pos):
         pass
 
 
-# def check_if_passed(home):
-    # if home > player[START_SQUARE] and player[START_SQUARE] % home < 0:
-    #     print("Pawn would go past home.")
-    #     return 
-    # else:
-    #     pass
-
-
 def check_win(player):
     if player['pawns_home'] == 4:
         print(f"Player {player['color']} has won the game!")
@@ -226,6 +196,7 @@ def get_initials(players):
     for player in players:
         player_initials.append(player['color'][0])
     return player_initials
-    
+
+
 if __name__ == "__main__":   
     main()
